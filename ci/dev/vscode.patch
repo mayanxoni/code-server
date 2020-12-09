@@ -229,7 +229,7 @@ index 0000000000000000000000000000000000000000..ac2e6eb2cdf41787194f7681a76ad4a5
 +	common.minifyTask("out-vscode")
 +));
 diff --git a/extensions/github-authentication/src/githubServer.ts b/extensions/github-authentication/src/githubServer.ts
-index 55c0e4ef49d840dd71a9c38b9a75f9a30131c1a4..a228b86d58e7ad817fa426ab812af32f2104cb7b 100644
+index 55c0e4ef49d840dd71a9c38b9a75f9a30131c1a4..65944e25a9a37db1a9d1d7d93ceacd6fd6937b0f 100644
 --- a/extensions/github-authentication/src/githubServer.ts
 +++ b/extensions/github-authentication/src/githubServer.ts
 @@ -50,7 +50,10 @@ export class GitHubServer {
@@ -244,6 +244,17 @@ index 55c0e4ef49d840dd71a9c38b9a75f9a30131c1a4..a228b86d58e7ad817fa426ab812af32f
  
  		if (this.isTestEnvironment(callbackUri)) {
  			const token = await vscode.window.showInputBox({ prompt: 'GitHub Personal Access Token', ignoreFocusOut: true });
+@@ -149,7 +152,9 @@ export class GitHubServer {
+ 		const uriOrToken = await vscode.window.showInputBox({ prompt: 'Token', ignoreFocusOut: true });
+ 		if (!uriOrToken) { return; }
+ 		try {
+-			const uri = vscode.Uri.parse(uriOrToken);
++			// NOTE@coder: When copying the token from the page it includes spaces.
++			// These spaces cause the parsing to fail and result in a failed sign-in.
++			const uri = vscode.Uri.parse(uriOrToken.trim());
+ 			if (!uri.scheme || uri.scheme === 'file') { throw new Error; }
+ 			uriHandler.handleUri(uri);
+ 		} catch (e) {
 diff --git a/extensions/postinstall.js b/extensions/postinstall.js
 index da4fa3e9d0443d679dfbab1000b434af2ae01afd..50f3e1144f8057883dea8b91ec2f7073458dbd94 100644
 --- a/extensions/postinstall.js
